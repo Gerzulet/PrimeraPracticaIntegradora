@@ -29,9 +29,9 @@ router.get('/:pid', async (req, res) => {
 })
 
 router.post('/', uploader.single('thumbnail'), async (req, res) => {
-  const { title, description, price, thumbnail, code, stock } = req.body;
+  const { title, description, category, price, thumbnail, code, stock } = req.body;
   !req.file && res.status(400).send({status:"error", error : "No se pudo guardar la imagen"}) 
-   await ProductManager.addProduct(title, description, price, req.file.path, code, stock) 
+   await ProductManager.addProduct(title, description,category, price, req.file.path, code, stock) 
    ? res.status(201).json({ info: "producto agregado" }) 
    : res.status(406).json({ info: "Producto ya presente en lista" })
 })

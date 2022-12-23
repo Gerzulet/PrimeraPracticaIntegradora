@@ -8,10 +8,11 @@ class ProductManager {
     fs.existsSync(this.path) ? this.products = JSON.parse(fs.readFileSync(this.path, 'utf-8')) : this.products = [];
   }
 
-  async addProduct(title, description, price, thumbnail, code, stock) {
+  async addProduct(title, description, category, price, thumbnail, code, stock) {
     let producto = {
       'title': title,
       'description': description,
+      "category": category,
       'price': price,
       'thumbnail': thumbnail,
       'code': code,
