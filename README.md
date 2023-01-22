@@ -1,1 +1,8 @@
-# Backend: Primera pre-entrega
+# Backend: Primera practica integradora
+
+## NOTAS 
+
+
+
+
+

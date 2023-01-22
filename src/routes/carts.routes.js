@@ -1,7 +1,7 @@
 
 import { Router } from 'express'
-import CartManager from '../utils/CartManager.js'
-import ProductManager from '../utils/ProductManager.js'
+import CartManager from '../dao/fs/CartManager.js'
+import ProductManager from '../dao/fs/ProductManager.js'
 
 const router = Router()
 
