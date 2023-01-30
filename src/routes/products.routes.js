@@ -1,7 +1,7 @@
 import { Router } from 'express'
 import { uploader } from '../utils/multer.js'
 import { productModel } from '../dao/models/products.models.js'
-
+import productDao from '../dao/productDao.js'
 
 // ☐ IMPLEMENTAR MONGO PARA REGISTRAR TODO POR ATLAS
 
@@ -13,34 +13,28 @@ const router = Router()
 router.get('/', async (req, res) => {
   let limit = parseInt(req.query.limit)
   try {
-    if (limit === 0 || !limit) {
-      res.status(200).json(await productModel.find({}))
-    } else {
-      res.status(202).json(await productModel.find({}).limit(limit))
-    }
+    res.json(await productDao.getProducts(limit));
   } catch (error) {
-    res.status(400).json({ info: "Ha ocurrido un error", error })
+   res.json({error}) 
   }
 })
 
 //METODO PARA OBTENER PRODUCTO POR ID
 router.get('/:pid', async (req, res) => {
   let pid = (req.params.pid);
-  let response = await productModel.findById(pid)
   try {
-    res.json(response || { "Error": "Producto no encontrado" })
-  } catch {
-    res.json({ info: 'Ingrese un id correcto' })
+    res.json(await productDao.getProductById(pid))
+  } catch (error) {
+   res.json({error}) 
   }
 })
 
 router.post('/', uploader.single('thumbnail'), async (req, res) => {
   const { title, description, category, price, thumbnail, code, stock } = req.body;
   !req.file && res.status(400).send({ status: "error", error: "No se pudo guardar la imagen" })
-
-  let thumbnailName = req.file.filename;
+  let thumbnailName = req.file.filename || 'Sin Imagen';
   try {
-    let addedProduct = await productModel.create({
+    let addedProduct = await productDao.createProduct({
       title, description, category, price, thumbnailName, code, stock
     })
     res.status(201).json({ info: 'Producto Agregado', addedProduct })
@@ -53,14 +47,22 @@ router.post('/', uploader.single('thumbnail'), async (req, res) => {
 router.put('/:pid', async (req, res) => {
   const pid = (req.params.pid)
   const updatedValue = req.body
-  await productModel.updateOne({ _id: pid }, updatedValue)
+  try {
+  await productDao.updateProduct(pid, updatedValue)
   res.send({ status: 200, payload: updatedValue })
+  } catch (error) {
+   res.json({error}) 
+  }
 })
 
 router.delete('/:pid', async (req, res) => {
   let pid = (req.params.pid)
-  let result = await productModel.deleteOne({ _id: pid })
-  res.send({ status: 200, payload: result })
+  try {
+   await productDao.deleteProduct(pid) 
+  res.json({status:200, message:'Producto producto eliminado'})
+  } catch (error) {
+   res.json({error}) 
+  }
 })
 
 export default router;
