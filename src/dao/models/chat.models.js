@@ -1,12 +1,10 @@
 import mongoose from 'mongoose'
 
-const chatCollection = 'chat'
+const chatCollection = 'messages'
 
 const chatSchema = new mongoose.Schema({
-  products: {
-    productId : Integer, 
-    quantity: Integer
-  }
+    user : String, 
+    message: String
 })
 
 

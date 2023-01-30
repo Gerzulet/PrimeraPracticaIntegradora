@@ -1,9 +1,13 @@
 import express from 'express'
 import productRoutes from './src/routes/products.routes.js'
+import viewsRoutes from './src/routes/views.router.js'
+import chatRoutes from './src/routes/chat.routes.js'
 import handlebars from 'express-handlebars'
 import cartRoutes from './src/routes/carts.routes.js'
 import mongoose from 'mongoose'
-import __dirname from './src/utils/dirname.js'
+import __dirname from './dirname.js'
+import chatDao from './src/dao/chatDao.js'
+import path from 'path'
 import { Server } from 'socket.io'
 
 const app = express()
@@ -22,12 +26,14 @@ app.engine('hbs', handlebars.engine({
   extname: 'hbs', 
   defaultLayout: 'main'
 }))
-app.set('views', __dirname + '/views/')
+app.set('views', __dirname + '/src/views')
 app.set('view engine', 'hbs')
-app.use(express.static(__dirname + '+/public'))
+app.use(express.static(path.join(__dirname, '/src/public')));
 
 
 // ROUTES ✅
+app.use('/', viewsRoutes)
+app.use('/chat', chatRoutes)
 app.use('/api/products', productRoutes)
 app.use('/api/carts', cartRoutes)
 
@@ -41,17 +47,21 @@ mongoose.connect('mongodb+srv://CoderGermancho:coderBackend2023@codercluster.dzp
 })
 
 // SOCKET IO ✅ 
-io.on('connection', (socket) => {
-  console.log("Se ha conectado el socket con id : !", socket.id)
-  // Para carga de productos al inicio de pagina realtimeproducts
+io.on('connection', async (socket) => {
 
-  // Para agregar productos nuevos
-  socket.on("newProduct", (data) => {
+  socket.emit("historialChat", await chatDao.getMessages())
+
+
+  socket.on("mensajeNuevo", async (data) => {
+    let message = {
+      user : data.user, 
+      message: data.message
+    }
+    await chatDao.registerMessage(message)
+    io.emit("historialChat", await chatDao.getMessages())
+
  })
 
-  //Para eliminar productos 
-  socket.on("eliminarProducto", id => {
- })
 
 })
 

@@ -1,6 +1,5 @@
 import { Router } from 'express'
 import { uploader } from '../utils/multer.js'
-import { productModel } from '../dao/models/products.models.js'
 import productDao from '../dao/productDao.js'
 
 // ☐ IMPLEMENTAR MONGO PARA REGISTRAR TODO POR ATLAS
